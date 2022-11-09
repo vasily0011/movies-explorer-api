@@ -13,6 +13,7 @@ const NotFoundError = require('./errors/NotFoundError');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { validationLogin, validationCreateUser } = require('./middlewares/validation');
+const apiLimiter = require('./middlewares/rateLimit');
 
 const { PORT = 3000 } = process.env;
 
@@ -42,6 +43,7 @@ app.get('/crash-test', () => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
+app.use(apiLimiter);
 
 app.post(
   '/signin',
