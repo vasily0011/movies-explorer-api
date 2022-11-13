@@ -1,71 +1,45 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const cors = require('cors');
 const helmet = require('helmet');
-const { auth } = require('./middlewares/auth');
-const userRoutes = require('./routes/users');
-const cardRoutes = require('./routes/cards');
-const { createUser, login } = require('./controllers/users');
-const NotFoundError = require('./errors/NotFoundError');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { validationLogin, validationCreateUser } = require('./middlewares/validation');
 const apiLimiter = require('./middlewares/rateLimit');
+const routes = require('./routes');
 
-const { PORT = 3000 } = process.env;
+const {
+  NODE_ENV,
+  PORT = 3002,
+  DB_ADDRESS,
+} = process.env;
 
 const app = express();
+app.use(helmet());
+app.use(express.json());
 
 const allowedCors = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'https://localhost:3000',
-  'https://localhost:3001',
+  'http://localhost:3002',
+  'https://localhost:3002',
 ];
 
-app.use(helmet());
 app.use(cors({
   origin: allowedCors,
   credentials: true,
 }));
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {});
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 app.use(apiLimiter);
-
-app.post(
-  '/signin',
-  validationLogin,
-  login,
-);
-
-app.post(
-  '/signup',
-  validationCreateUser,
-  createUser,
-);
-
-app.use(auth);
-app.use('/users', userRoutes);
-app.use('/cards', cardRoutes);
-app.use((req, res, next) => next(new NotFoundError('Страница не найдена.')));
-
-app.use(errors());
-app.use(errorHandler);
+app.use(routes);
 app.use(errorLogger);
+app.use(errorHandler);
+app.use(errors());
 
+mongoose.connect(`${NODE_ENV === 'production' ? DB_ADDRESS : 'mongodb://localhost:27017/moviesdb'}`, {
+  // useNewUrlParser: true,
+  // useUnifiedTopology: false,
+});
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);

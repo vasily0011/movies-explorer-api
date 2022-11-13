@@ -1,24 +1,25 @@
-const userRouter = require('express').Router();
+const userRoutes = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
 const {
   getCurrentUser,
-  createUser,
   editUserProfile,
 } = require('../controllers/users');
+const auth = require('../middlewares/auth');
 
-userRouter.post('/', createUser);
-userRouter.get('/me', getCurrentUser);
+userRoutes.use(auth);
 
-userRouter.patch(
-  '/me',
+userRoutes.get('/users/me', getCurrentUser);
+
+userRoutes.patch(
+  '/users/me',
   celebrate({
     body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().required().min(2).max(30),
+      name: Joi.string().min(2).max(30).required(),
+      email: Joi.string().required().email(),
     }),
   }),
   editUserProfile,
 );
 
-module.exports = userRouter;
+module.exports = userRoutes;

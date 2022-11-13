@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/vasily0011/movies-explorer-api/issues"
   },
-  "homepage": ".",
+  "homepage": "http://.",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.0",
