@@ -22,6 +22,8 @@ app.use(express.json());
 const allowedCors = [
   'http://localhost:3002',
   'https://localhost:3002',
+  'http://movies.vasily0011.nomoredomains.icu',
+  'https://movies.vasily0011.nomoredomains.icu',
 ];
 
 app.use(cors({
