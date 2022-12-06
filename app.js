@@ -20,6 +20,8 @@ app.use(helmet());
 app.use(express.json());
 
 const allowedCors = [
+  'http://localhost:3000',
+  'https://localhost:3000',
   'http://localhost:3002',
   'https://localhost:3002',
   'http://movies.vasily0011.nomoredomains.icu',
