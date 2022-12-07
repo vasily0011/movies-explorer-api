@@ -21,13 +21,13 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, email,
+    email, name, password,
   } = req.body;
   bcrypt.hash(req.body.password, 10).then((hash) => User.create({
     name, email, password: hash,
   }))
-    .then(() => res.send({
-      name, email,
+    .then((user) => res.send({
+      email, name, password, _id: user._id,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
